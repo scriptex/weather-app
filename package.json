@@ -12,7 +12,7 @@
 		"build": "react-scripts build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
-		"prod": "yarn build && mv build docs"
+		"prod": "rm -rf docs && yarn build && mv build docs"
 	},
 	"eslintConfig": {
 		"extends": "react-app"
@@ -22,5 +22,6 @@
 		"not dead",
 		"not ie <= 11",
 		"not op_mini all"
-	]
+	],
+	"homepage": "./"
 }
