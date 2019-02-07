@@ -1,81 +1,14 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 
-class App extends Component {
-	base = 'https://api.openweathermap.org/data/2.5/weather?q=';
-	appId = '&units=metric&appid=ac4bbd3c23dc38c5831469c1976a79ff';
-	imgExt = '.png';
-	imgBase = '//openweathermap.org/img/w/';
+import { getData, toTime } from './utils';
+import { IMG_EXT, IMG_BASE } from './constants';
 
-	state = {
-		city: '',
-		data: {},
-		error: ''
-	};
+const App = () => {
+	const [city, setCity] = useState('');
+	const [data, setData] = useState({});
+	const [error, setError] = useState('');
 
-	getData = async params => {
-		const data = await fetch(this.base + params + this.appId)
-			.then(response => response.json())
-			.catch(this.onError);
-
-		console.log(data);
-
-		this.setState({ data });
-	};
-
-	onSubmit = e => {
-		e.preventDefault();
-
-		const params = this.state.city;
-
-		if (!params) {
-			this.setState({
-				error: 'Please type a city'
-			});
-
-			return;
-		}
-
-		this.setState({
-			error: ''
-		});
-
-		this.getData(params);
-	};
-
-	onSuccess = position => {
-		const { latitude, longitude } = position.coords;
-		const params = `?lat=${latitude}&lon=${longitude}`;
-
-		this.getData(params);
-	};
-
-	onError = e => {
-		const error = typeof e === 'string' ? e : '';
-
-		this.setState({
-			error
-		});
-	};
-
-	temp = kelvin => Math.round(kelvin - 273.15);
-
-	time = date => {
-		const dateObj = new Date(Date(date));
-		const hours = dateObj.getHours();
-		const minutes = dateObj.getMinutes();
-
-		return `${hours}:${minutes}`;
-	};
-
-	componentDidMount = () => {
-		navigator.geolocation &&
-			navigator.geolocation.getCurrentPosition(
-				this.onSuccess,
-				this.onError
-			);
-	};
-
-	renderData = data => {
+	const renderData = data => {
 		if (!Object.keys(data).length) {
 			return null;
 		}
@@ -86,8 +19,6 @@ class App extends Component {
 
 		const { name, sys, coord, weather, main, wind } = data;
 
-		// TODO: convert wind props to human readable strings
-		// https://www.windfinder.com/wind/windspeed.htm
 		return (
 			<React.Fragment>
 				<h2>
@@ -95,109 +26,119 @@ class App extends Component {
 				</h2>
 
 				<table>
-					<tr>
-						<td>Coordinates:</td>
+					<tbody>
+						<tr>
+							<td>Coordinates:</td>
 
-						<td>
-							[{coord.lat}, {coord.lon}]
-						</td>
-					</tr>
-
-					{weather.map((item, i) => (
-						<tr key={i}>
 							<td>
-								<img
-									src={`${this.imgBase}${item.icon}${
-										this.imgExt
-									}`}
-									alt={item.description}
-								/>
+								[{coord.lat}, {coord.lon}]
 							</td>
-
-							<td>{item.main}</td>
 						</tr>
-					))}
 
-					<tr>
-						<td>Sunrise:</td>
+						{weather.map((item, i) => (
+							<tr key={i}>
+								<td>
+									<img
+										src={`${IMG_BASE}${
+											item.icon
+										}${IMG_EXT}`}
+										alt={item.description}
+									/>
+								</td>
 
-						<td>{this.time(sys.sunrise)}</td>
-					</tr>
+								<td>{item.main}</td>
+							</tr>
+						))}
 
-					<tr>
-						<td>Sunset:</td>
+						<tr>
+							<td>Sunrise:</td>
 
-						<td>{this.time(sys.sunset)}</td>
-					</tr>
+							<td>{toTime(sys.sunrise)}</td>
+						</tr>
 
-					<tr>
-						<td>Current temp:</td>
+						<tr>
+							<td>Sunset:</td>
 
-						<td>{main.temp}&deg; C</td>
-					</tr>
+							<td>{toTime(sys.sunset)}</td>
+						</tr>
 
-					<tr>
-						<td>Maximum temp:</td>
+						<tr>
+							<td>Current temp:</td>
 
-						<td>{main.temp_max}&deg; C</td>
-					</tr>
+							<td>{main.temp}&deg; C</td>
+						</tr>
 
-					<tr>
-						<td>Minimum temp:</td>
+						<tr>
+							<td>Maximum temp:</td>
 
-						<td>{main.temp_min}&deg; C</td>
-					</tr>
+							<td>{main.temp_max}&deg; C</td>
+						</tr>
 
-					<tr>
-						<td>Humidity:</td>
+						<tr>
+							<td>Minimum temp:</td>
 
-						<td>{main.humidity} %</td>
-					</tr>
+							<td>{main.temp_min}&deg; C</td>
+						</tr>
 
-					<tr>
-						<td>Pressure:</td>
+						<tr>
+							<td>Humidity:</td>
 
-						<td>{main.pressure} hpa</td>
-					</tr>
+							<td>{main.humidity} %</td>
+						</tr>
 
-					<tr>
-						<td>Wind speed:</td>
+						<tr>
+							<td>Pressure:</td>
 
-						<td>{wind.speed} m/s</td>
-					</tr>
+							<td>{main.pressure} hpa</td>
+						</tr>
 
-					<tr>
-						<td>Wind direction:</td>
+						<tr>
+							<td>Wind speed:</td>
 
-						<td>{data.wind.deg}</td>
-					</tr>
+							<td>{wind.speed} m/s</td>
+						</tr>
+
+						<tr>
+							<td>Wind direction:</td>
+
+							<td>{data.wind.deg}</td>
+						</tr>
+					</tbody>
 				</table>
 			</React.Fragment>
 		);
 	};
 
-	render() {
-		const { city, data, error } = this.state;
+	return (
+		<React.Fragment>
+			<form
+				onSubmit={e => {
+					e.preventDefault();
 
-		return (
-			<React.Fragment>
-				<form onSubmit={this.onSubmit}>
-					<input
-						type="text"
-						placeholder="Type a city..."
-						value={city}
-						onChange={e => this.setState({ city: e.target.value })}
-					/>
+					if (!city) {
+						setError('Please type a city.');
+						return;
+					}
 
-					<button type="submit">Go</button>
-				</form>
+					setError('');
+					getData(city, setData, setError);
+				}}
+			>
+				<input
+					type="text"
+					placeholder="Type a city..."
+					value={city}
+					onChange={e => setCity(e.target.value)}
+				/>
 
-				{this.renderData(data)}
+				<button type="submit">Go</button>
+			</form>
 
-				{error && <h3>{error}</h3>}
-			</React.Fragment>
-		);
-	}
-}
+			{renderData(data)}
+
+			{error && <h3>{error}</h3>}
+		</React.Fragment>
+	);
+};
 
 export default App;
