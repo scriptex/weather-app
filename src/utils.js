@@ -7,11 +7,3 @@ export const getData = async (params, onSuccess, onError) => {
 
 	onSuccess(data);
 };
-
-export const toTime = date => {
-	const dateObj = new Date(Date(date));
-	const hours = dateObj.getHours();
-	const minutes = dateObj.getMinutes();
-
-	return `${hours}:${minutes}`;
-};

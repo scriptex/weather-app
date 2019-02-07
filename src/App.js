@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { getData, toTime } from './utils';
+import { getData } from './utils';
 import { IMG_EXT, IMG_BASE } from './constants';
 
 const App = () => {
@@ -49,18 +49,6 @@ const App = () => {
 								<td>{item.main}</td>
 							</tr>
 						))}
-
-						<tr>
-							<td>Sunrise:</td>
-
-							<td>{toTime(sys.sunrise)}</td>
-						</tr>
-
-						<tr>
-							<td>Sunset:</td>
-
-							<td>{toTime(sys.sunset)}</td>
-						</tr>
 
 						<tr>
 							<td>Current temp:</td>
