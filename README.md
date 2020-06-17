@@ -1,6 +1,6 @@
 # Weather App
 
-[![Build Status](https://travis-ci.org/scriptex/weather-app.svg?branch=master)](https://travis-ci.org/scriptex/weather-app)
+[![Build Status](https://travis-ci.com/scriptex/weather-app.svg?branch=master)](https://travis-ci.com/scriptex/weather-app)
 
 A simple weather application using React Hooks.
 
